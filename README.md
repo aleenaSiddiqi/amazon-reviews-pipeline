@@ -50,8 +50,14 @@ EOF
   Source Dataset: ds_reviews_raw_json
   Sink Dataset: ds_reviews_processed_parquet
 [Schema drift when enabled, allows the pipeline to handle variations in the data structure]
+- The acutal transformation happend when building the Mapping data flow. I created a data flow called `df_reviews_json_to_parquet_partitioned` where the raw JSON data is read and schema drift enabled so that the pipeline can handle any unexpected fields. Then we create a new column called "review_year" by extracting the year from the Unix timestamp in the data. The expression used was: year(toTimestamp(toLong(unixReviewTime) * 1000)). This converts the Unix timestamp (seconds since 1970) to a proper timestamp, then extracts just the year.
+- Sink: write the data to Parquet format and partition it by the review_year column. So the output data is organized into separate folders by year (1999,2000,2001,etc) which makes queries that filter by year much faster.
+- I created a pipeline named pl_reviews_ingestion_parquet_partitioned and added the data flow as an activity. Then I ran it in debug mode to test it. The pipeline successfully processed all 6.7 million reviews and wrote them to the processed container, partitioned across 16 years.
+- Finally, I added a schedule trigger that runs the pipeline automatically on a daily basis. In a real-world scenario, this would process any new data that arrives in the raw container. I published the pipeline to make it live.
 
 
+<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 19 24 AM" src="https://github.com/user-attachments/assets/5bde4370-fec4-46cb-a24f-71000f33f1c8" />
+<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 14 39 AM" src="https://github.com/user-attachments/assets/5750c326-ebac-4454-922b-9a905b2aa6ed" />
 
 
 
