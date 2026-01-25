@@ -55,7 +55,7 @@ EOF
 - I created a pipeline named pl_reviews_ingestion_parquet_partitioned and added the data flow as an activity. Then I ran it in debug mode to test it. The pipeline successfully processed all 6.7 million reviews and wrote them to the processed container, partitioned across 16 years.
 - Finally, I added a schedule trigger that runs the pipeline automatically on a daily basis. In a real-world scenario, this would process any new data that arrives in the raw container. I published the pipeline to make it live.
 
-
+<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 13 56 AM" src="https://github.com/user-attachments/assets/3f4369ec-4c46-427f-bbd8-2973f0f2d5d5" />
 <img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 19 24 AM" src="https://github.com/user-attachments/assets/5bde4370-fec4-46cb-a24f-71000f33f1c8" />
 <img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 14 39 AM" src="https://github.com/user-attachments/assets/5750c326-ebac-4454-922b-9a905b2aa6ed" />
 
