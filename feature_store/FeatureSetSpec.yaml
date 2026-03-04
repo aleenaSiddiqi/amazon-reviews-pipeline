@@ -1,0 +1,806 @@
+$schema: http://azureml/sdk-2-0/FeatureSetSpec.json
+spec_version: "1"
+
+
+source:
+  type: parquet
+  path: azureml:azureml_f704872e-baec-472d-8958-f277c3a82ab4_output_data_out:1
+  timestamp_column:
+    name: reviewTime
+
+index_columns:
+  - name: asin
+    type: string
+  - name: reviewerID
+    type: string
+
+features:
+  # Review Length Features
+  - name: review_length_words
+    type: integer
+  - name: review_length_chars
+    type: integer
+
+  # Sentiment Features
+  - name: sentiment_pos
+    type: float
+  - name: sentiment_neg
+    type: float
+  - name: sentiment_neu
+    type: float
+  - name: sentiment_compound
+    type: float
+
+  # Helpfulness Feature
+  - name: helpfulness_ratio
+    type: float
+
+  # Embedding Features
+  - name: bert_embedding_0
+    type: float
+  - name: bert_embedding_1
+    type: float
+  - name: bert_embedding_2
+    type: float
+  - name: bert_embedding_3
+    type: float
+  - name: bert_embedding_4
+    type: float
+  - name: bert_embedding_5
+    type: float
+  - name: bert_embedding_6
+    type: float
+  - name: bert_embedding_7
+    type: float
+  - name: bert_embedding_8
+    type: float
+  - name: bert_embedding_9
+    type: float
+  - name: bert_embedding_10
+    type: float
+  - name: bert_embedding_11
+    type: float
+  - name: bert_embedding_12
+    type: float
+  - name: bert_embedding_13
+    type: float
+  - name: bert_embedding_14
+    type: float
+  - name: bert_embedding_15
+    type: float
+  - name: bert_embedding_16
+    type: float
+  - name: bert_embedding_17
+    type: float
+  - name: bert_embedding_18
+    type: float
+  - name: bert_embedding_19
+    type: float
+  - name: bert_embedding_20
+    type: float
+  - name: bert_embedding_21
+    type: float
+  - name: bert_embedding_22
+    type: float
+  - name: bert_embedding_23
+    type: float
+  - name: bert_embedding_24
+    type: float
+  - name: bert_embedding_25
+    type: float
+  - name: bert_embedding_26
+    type: float
+  - name: bert_embedding_27
+    type: float
+  - name: bert_embedding_28
+    type: float
+  - name: bert_embedding_29
+    type: float
+  - name: bert_embedding_30
+    type: float
+  - name: bert_embedding_31
+    type: float
+  - name: bert_embedding_32
+    type: float
+  - name: bert_embedding_33
+    type: float
+  - name: bert_embedding_34
+    type: float
+  - name: bert_embedding_35
+    type: float
+  - name: bert_embedding_36
+    type: float
+  - name: bert_embedding_37
+    type: float
+  - name: bert_embedding_38
+    type: float
+  - name: bert_embedding_39
+    type: float
+  - name: bert_embedding_40
+    type: float
+  - name: bert_embedding_41
+    type: float
+  - name: bert_embedding_42
+    type: float
+  - name: bert_embedding_43
+    type: float
+  - name: bert_embedding_44
+    type: float
+  - name: bert_embedding_45
+    type: float
+  - name: bert_embedding_46
+    type: float
+  - name: bert_embedding_47
+    type: float
+  - name: bert_embedding_48
+    type: float
+  - name: bert_embedding_49
+    type: float
+  - name: bert_embedding_50
+    type: float
+  - name: bert_embedding_51
+    type: float
+  - name: bert_embedding_52
+    type: float
+  - name: bert_embedding_53
+    type: float
+  - name: bert_embedding_54
+    type: float
+  - name: bert_embedding_55
+    type: float
+  - name: bert_embedding_56
+    type: float
+  - name: bert_embedding_57
+    type: float
+  - name: bert_embedding_58
+    type: float
+  - name: bert_embedding_59
+    type: float
+  - name: bert_embedding_60
+    type: float
+  - name: bert_embedding_61
+    type: float
+  - name: bert_embedding_62
+    type: float
+  - name: bert_embedding_63
+    type: float
+  - name: bert_embedding_64
+    type: float
+  - name: bert_embedding_65
+    type: float
+  - name: bert_embedding_66
+    type: float
+  - name: bert_embedding_67
+    type: float
+  - name: bert_embedding_68
+    type: float
+  - name: bert_embedding_69
+    type: float
+  - name: bert_embedding_70
+    type: float
+  - name: bert_embedding_71
+    type: float
+  - name: bert_embedding_72
+    type: float
+  - name: bert_embedding_73
+    type: float
+  - name: bert_embedding_74
+    type: float
+  - name: bert_embedding_75
+    type: float
+  - name: bert_embedding_76
+    type: float
+  - name: bert_embedding_77
+    type: float
+  - name: bert_embedding_78
+    type: float
+  - name: bert_embedding_79
+    type: float
+  - name: bert_embedding_80
+    type: float
+  - name: bert_embedding_81
+    type: float
+  - name: bert_embedding_82
+    type: float
+  - name: bert_embedding_83
+    type: float
+  - name: bert_embedding_84
+    type: float
+  - name: bert_embedding_85
+    type: float
+  - name: bert_embedding_86
+    type: float
+  - name: bert_embedding_87
+    type: float
+  - name: bert_embedding_88
+    type: float
+  - name: bert_embedding_89
+    type: float
+  - name: bert_embedding_90
+    type: float
+  - name: bert_embedding_91
+    type: float
+  - name: bert_embedding_92
+    type: float
+  - name: bert_embedding_93
+    type: float
+  - name: bert_embedding_94
+    type: float
+  - name: bert_embedding_95
+    type: float
+  - name: bert_embedding_96
+    type: float
+  - name: bert_embedding_97
+    type: float
+  - name: bert_embedding_98
+    type: float
+  - name: bert_embedding_99
+    type: float
+  - name: bert_embedding_100
+    type: float
+  - name: bert_embedding_101
+    type: float
+  - name: bert_embedding_102
+    type: float
+  - name: bert_embedding_103
+    type: float
+  - name: bert_embedding_104
+    type: float
+  - name: bert_embedding_105
+    type: float
+  - name: bert_embedding_106
+    type: float
+  - name: bert_embedding_107
+    type: float
+  - name: bert_embedding_108
+    type: float
+  - name: bert_embedding_109
+    type: float
+  - name: bert_embedding_110
+    type: float
+  - name: bert_embedding_111
+    type: float
+  - name: bert_embedding_112
+    type: float
+  - name: bert_embedding_113
+    type: float
+  - name: bert_embedding_114
+    type: float
+  - name: bert_embedding_115
+    type: float
+  - name: bert_embedding_116
+    type: float
+  - name: bert_embedding_117
+    type: float
+  - name: bert_embedding_118
+    type: float
+  - name: bert_embedding_119
+    type: float
+  - name: bert_embedding_120
+    type: float
+  - name: bert_embedding_121
+    type: float
+  - name: bert_embedding_122
+    type: float
+  - name: bert_embedding_123
+    type: float
+  - name: bert_embedding_124
+    type: float
+  - name: bert_embedding_125
+    type: float
+  - name: bert_embedding_126
+    type: float
+  - name: bert_embedding_127
+    type: float
+  - name: bert_embedding_128
+    type: float
+  - name: bert_embedding_129
+    type: float
+  - name: bert_embedding_130
+    type: float
+  - name: bert_embedding_131
+    type: float
+  - name: bert_embedding_132
+    type: float
+  - name: bert_embedding_133
+    type: float
+  - name: bert_embedding_134
+    type: float
+  - name: bert_embedding_135
+    type: float
+  - name: bert_embedding_136
+    type: float
+  - name: bert_embedding_137
+    type: float
+  - name: bert_embedding_138
+    type: float
+  - name: bert_embedding_139
+    type: float
+  - name: bert_embedding_140
+    type: float
+  - name: bert_embedding_141
+    type: float
+  - name: bert_embedding_142
+    type: float
+  - name: bert_embedding_143
+    type: float
+  - name: bert_embedding_144
+    type: float
+  - name: bert_embedding_145
+    type: float
+  - name: bert_embedding_146
+    type: float
+  - name: bert_embedding_147
+    type: float
+  - name: bert_embedding_148
+    type: float
+  - name: bert_embedding_149
+    type: float
+  - name: bert_embedding_150
+    type: float
+  - name: bert_embedding_151
+    type: float
+  - name: bert_embedding_152
+    type: float
+  - name: bert_embedding_153
+    type: float
+  - name: bert_embedding_154
+    type: float
+  - name: bert_embedding_155
+    type: float
+  - name: bert_embedding_156
+    type: float
+  - name: bert_embedding_157
+    type: float
+  - name: bert_embedding_158
+    type: float
+  - name: bert_embedding_159
+    type: float
+  - name: bert_embedding_160
+    type: float
+  - name: bert_embedding_161
+    type: float
+  - name: bert_embedding_162
+    type: float
+  - name: bert_embedding_163
+    type: float
+  - name: bert_embedding_164
+    type: float
+  - name: bert_embedding_165
+    type: float
+  - name: bert_embedding_166
+    type: float
+  - name: bert_embedding_167
+    type: float
+  - name: bert_embedding_168
+    type: float
+  - name: bert_embedding_169
+    type: float
+  - name: bert_embedding_170
+    type: float
+  - name: bert_embedding_171
+    type: float
+  - name: bert_embedding_172
+    type: float
+  - name: bert_embedding_173
+    type: float
+  - name: bert_embedding_174
+    type: float
+  - name: bert_embedding_175
+    type: float
+  - name: bert_embedding_176
+    type: float
+  - name: bert_embedding_177
+    type: float
+  - name: bert_embedding_178
+    type: float
+  - name: bert_embedding_179
+    type: float
+  - name: bert_embedding_180
+    type: float
+  - name: bert_embedding_181
+    type: float
+  - name: bert_embedding_182
+    type: float
+  - name: bert_embedding_183
+    type: float
+  - name: bert_embedding_184
+    type: float
+  - name: bert_embedding_185
+    type: float
+  - name: bert_embedding_186
+    type: float
+  - name: bert_embedding_187
+    type: float
+  - name: bert_embedding_188
+    type: float
+  - name: bert_embedding_189
+    type: float
+  - name: bert_embedding_190
+    type: float
+  - name: bert_embedding_191
+    type: float
+  - name: bert_embedding_192
+    type: float
+  - name: bert_embedding_193
+    type: float
+  - name: bert_embedding_194
+    type: float
+  - name: bert_embedding_195
+    type: float
+  - name: bert_embedding_196
+    type: float
+  - name: bert_embedding_197
+    type: float
+  - name: bert_embedding_198
+    type: float
+  - name: bert_embedding_199
+    type: float
+  - name: bert_embedding_200
+    type: float
+  - name: bert_embedding_201
+    type: float
+  - name: bert_embedding_202
+    type: float
+  - name: bert_embedding_203
+    type: float
+  - name: bert_embedding_204
+    type: float
+  - name: bert_embedding_205
+    type: float
+  - name: bert_embedding_206
+    type: float
+  - name: bert_embedding_207
+    type: float
+  - name: bert_embedding_208
+    type: float
+  - name: bert_embedding_209
+    type: float
+  - name: bert_embedding_210
+    type: float
+  - name: bert_embedding_211
+    type: float
+  - name: bert_embedding_212
+    type: float
+  - name: bert_embedding_213
+    type: float
+  - name: bert_embedding_214
+    type: float
+  - name: bert_embedding_215
+    type: float
+  - name: bert_embedding_216
+    type: float
+  - name: bert_embedding_217
+    type: float
+  - name: bert_embedding_218
+    type: float
+  - name: bert_embedding_219
+    type: float
+  - name: bert_embedding_220
+    type: float
+  - name: bert_embedding_221
+    type: float
+  - name: bert_embedding_222
+    type: float
+  - name: bert_embedding_223
+    type: float
+  - name: bert_embedding_224
+    type: float
+  - name: bert_embedding_225
+    type: float
+  - name: bert_embedding_226
+    type: float
+  - name: bert_embedding_227
+    type: float
+  - name: bert_embedding_228
+    type: float
+  - name: bert_embedding_229
+    type: float
+  - name: bert_embedding_230
+    type: float
+  - name: bert_embedding_231
+    type: float
+  - name: bert_embedding_232
+    type: float
+  - name: bert_embedding_233
+    type: float
+  - name: bert_embedding_234
+    type: float
+  - name: bert_embedding_235
+    type: float
+  - name: bert_embedding_236
+    type: float
+  - name: bert_embedding_237
+    type: float
+  - name: bert_embedding_238
+    type: float
+  - name: bert_embedding_239
+    type: float
+  - name: bert_embedding_240
+    type: float
+  - name: bert_embedding_241
+    type: float
+  - name: bert_embedding_242
+    type: float
+  - name: bert_embedding_243
+    type: float
+  - name: bert_embedding_244
+    type: float
+  - name: bert_embedding_245
+    type: float
+  - name: bert_embedding_246
+    type: float
+  - name: bert_embedding_247
+    type: float
+  - name: bert_embedding_248
+    type: float
+  - name: bert_embedding_249
+    type: float
+  - name: bert_embedding_250
+    type: float
+  - name: bert_embedding_251
+    type: float
+  - name: bert_embedding_252
+    type: float
+  - name: bert_embedding_253
+    type: float
+  - name: bert_embedding_254
+    type: float
+  - name: bert_embedding_255
+    type: float
+  - name: bert_embedding_256
+    type: float
+  - name: bert_embedding_257
+    type: float
+  - name: bert_embedding_258
+    type: float
+  - name: bert_embedding_259
+    type: float
+  - name: bert_embedding_260
+    type: float
+  - name: bert_embedding_261
+    type: float
+  - name: bert_embedding_262
+    type: float
+  - name: bert_embedding_263
+    type: float
+  - name: bert_embedding_264
+    type: float
+  - name: bert_embedding_265
+    type: float
+  - name: bert_embedding_266
+    type: float
+  - name: bert_embedding_267
+    type: float
+  - name: bert_embedding_268
+    type: float
+  - name: bert_embedding_269
+    type: float
+  - name: bert_embedding_270
+    type: float
+  - name: bert_embedding_271
+    type: float
+  - name: bert_embedding_272
+    type: float
+  - name: bert_embedding_273
+    type: float
+  - name: bert_embedding_274
+    type: float
+  - name: bert_embedding_275
+    type: float
+  - name: bert_embedding_276
+    type: float
+  - name: bert_embedding_277
+    type: float
+  - name: bert_embedding_278
+    type: float
+  - name: bert_embedding_279
+    type: float
+  - name: bert_embedding_280
+    type: float
+  - name: bert_embedding_281
+    type: float
+  - name: bert_embedding_282
+    type: float
+  - name: bert_embedding_283
+    type: float
+  - name: bert_embedding_284
+    type: float
+  - name: bert_embedding_285
+    type: float
+  - name: bert_embedding_286
+    type: float
+  - name: bert_embedding_287
+    type: float
+  - name: bert_embedding_288
+    type: float
+  - name: bert_embedding_289
+    type: float
+  - name: bert_embedding_290
+    type: float
+  - name: bert_embedding_291
+    type: float
+  - name: bert_embedding_292
+    type: float
+  - name: bert_embedding_293
+    type: float
+  - name: bert_embedding_294
+    type: float
+  - name: bert_embedding_295
+    type: float
+  - name: bert_embedding_296
+    type: float
+  - name: bert_embedding_297
+    type: float
+  - name: bert_embedding_298
+    type: float
+  - name: bert_embedding_299
+    type: float
+  - name: bert_embedding_300
+    type: float
+  - name: bert_embedding_301
+    type: float
+  - name: bert_embedding_302
+    type: float
+  - name: bert_embedding_303
+    type: float
+  - name: bert_embedding_304
+    type: float
+  - name: bert_embedding_305
+    type: float
+  - name: bert_embedding_306
+    type: float
+  - name: bert_embedding_307
+    type: float
+  - name: bert_embedding_308
+    type: float
+  - name: bert_embedding_309
+    type: float
+  - name: bert_embedding_310
+    type: float
+  - name: bert_embedding_311
+    type: float
+  - name: bert_embedding_312
+    type: float
+  - name: bert_embedding_313
+    type: float
+  - name: bert_embedding_314
+    type: float
+  - name: bert_embedding_315
+    type: float
+  - name: bert_embedding_316
+    type: float
+  - name: bert_embedding_317
+    type: float
+  - name: bert_embedding_318
+    type: float
+  - name: bert_embedding_319
+    type: float
+  - name: bert_embedding_320
+    type: float
+  - name: bert_embedding_321
+    type: float
+  - name: bert_embedding_322
+    type: float
+  - name: bert_embedding_323
+    type: float
+  - name: bert_embedding_324
+    type: float
+  - name: bert_embedding_325
+    type: float
+  - name: bert_embedding_326
+    type: float
+  - name: bert_embedding_327
+    type: float
+  - name: bert_embedding_328
+    type: float
+  - name: bert_embedding_329
+    type: float
+  - name: bert_embedding_330
+    type: float
+  - name: bert_embedding_331
+    type: float
+  - name: bert_embedding_332
+    type: float
+  - name: bert_embedding_333
+    type: float
+  - name: bert_embedding_334
+    type: float
+  - name: bert_embedding_335
+    type: float
+  - name: bert_embedding_336
+    type: float
+  - name: bert_embedding_337
+    type: float
+  - name: bert_embedding_338
+    type: float
+  - name: bert_embedding_339
+    type: float
+  - name: bert_embedding_340
+    type: float
+  - name: bert_embedding_341
+    type: float
+  - name: bert_embedding_342
+    type: float
+  - name: bert_embedding_343
+    type: float
+  - name: bert_embedding_344
+    type: float
+  - name: bert_embedding_345
+    type: float
+  - name: bert_embedding_346
+    type: float
+  - name: bert_embedding_347
+    type: float
+  - name: bert_embedding_348
+    type: float
+  - name: bert_embedding_349
+    type: float
+  - name: bert_embedding_350
+    type: float
+  - name: bert_embedding_351
+    type: float
+  - name: bert_embedding_352
+    type: float
+  - name: bert_embedding_353
+    type: float
+  - name: bert_embedding_354
+    type: float
+  - name: bert_embedding_355
+    type: float
+  - name: bert_embedding_356
+    type: float
+  - name: bert_embedding_357
+    type: float
+  - name: bert_embedding_358
+    type: float
+  - name: bert_embedding_359
+    type: float
+  - name: bert_embedding_360
+    type: float
+  - name: bert_embedding_361
+    type: float
+  - name: bert_embedding_362
+    type: float
+  - name: bert_embedding_363
+    type: float
+  - name: bert_embedding_364
+    type: float
+  - name: bert_embedding_365
+    type: float
+  - name: bert_embedding_366
+    type: float
+  - name: bert_embedding_367
+    type: float
+  - name: bert_embedding_368
+    type: float
+  - name: bert_embedding_369
+    type: float
+  - name: bert_embedding_370
+    type: float
+  - name: bert_embedding_371
+    type: float
+  - name: bert_embedding_372
+    type: float
+  - name: bert_embedding_373
+    type: float
+  - name: bert_embedding_374
+    type: float
+  - name: bert_embedding_375
+    type: float
+  - name: bert_embedding_376
+    type: float
+  - name: bert_embedding_377
+    type: float
+  - name: bert_embedding_378
+    type: float
+  - name: bert_embedding_379
+    type: float
+  - name: bert_embedding_380
+    type: float
+  - name: bert_embedding_381
+    type: float
+  - name: bert_embedding_382
+    type: float
+  - name: bert_embedding_383
+    type: float
