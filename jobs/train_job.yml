@@ -28,13 +28,7 @@ inputs:
   test_data:
     type: uri_folder
     path: azureml:amazon_reviews_merged_features_test@latest
-  C:
-    type: number
-    default: 1.0
-  max_iter:
-    type: integer
-    default: 1000
-    
+
 outputs:
   model_output:
     type: uri_folder
