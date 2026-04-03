@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--test_data",  type=str, required=True)
     parser.add_argument("--output",     type=str, required=True)
     # Hyperparameters for sweep
-    parser.add_argument("--C",        type=float, default=1.0)
+    parser.add_argument("--C",        type=float, default=3.1353264492857433)
     parser.add_argument("--max_iter", type=int,   default=1000)
     return parser.parse_args()
 
