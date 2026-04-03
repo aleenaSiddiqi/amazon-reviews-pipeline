@@ -17,7 +17,7 @@ command: >-
   --output ${{outputs.model_output}}
   --C 3.1353264492857433
   --max_iter 1000
-  --features sbert_only
+  --features sbert_tfidf
 
 inputs:
   train_data:
