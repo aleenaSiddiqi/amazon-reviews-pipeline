@@ -14,6 +14,8 @@ def parse_args():
     parser.add_argument("--val_out", type=str, required=True)
     parser.add_argument("--test_out", type=str, required=True)
     parser.add_argument("--max_features", type=int, default=100)
+    parser.add_argument("--deploy_data", type=str, required=True)
+    parser.add_argument("--deploy_out", type=str, required=True)
     return parser.parse_args()
 
 
@@ -24,6 +26,7 @@ def main():
     train_df = pd.read_parquet(args.train_data)
     val_df = pd.read_parquet(args.val_data)
     test_df = pd.read_parquet(args.test_data)
+    deploy_df = pd.read_parquet(args.deploy_data)          # ADD THIS
 
     # Fit TF-IDF ONLY on training
     vectorizer = TfidfVectorizer(
@@ -31,25 +34,28 @@ def main():
         stop_words="english",
         ngram_range=(1, 2)
     )
-
     train_tfidf = vectorizer.fit_transform(train_df["reviewText"].fillna(""))
     val_tfidf = vectorizer.transform(val_df["reviewText"].fillna(""))
     test_tfidf = vectorizer.transform(test_df["reviewText"].fillna(""))
+    deploy_tfidf = vectorizer.transform(deploy_df["reviewText"].fillna(""))  # ADD THIS
 
     # Create output folders
     os.makedirs(args.train_out, exist_ok=True)
     os.makedirs(args.val_out, exist_ok=True)
     os.makedirs(args.test_out, exist_ok=True)
+    os.makedirs(args.deploy_out, exist_ok=True)             # ADD THIS
 
-    # Save ORIGINAL datasets only (no TF-IDF merged)
+    # Save ORIGINAL datasets
     train_df.to_parquet(os.path.join(args.train_out, "data.parquet"))
     val_df.to_parquet(os.path.join(args.val_out, "data.parquet"))
     test_df.to_parquet(os.path.join(args.test_out, "data.parquet"))
+    deploy_df.to_parquet(os.path.join(args.deploy_out, "data.parquet"))     # ADD THIS
 
-    # Save TF-IDF matrices separately
+    # Save TF-IDF matrices
     sparse.save_npz(os.path.join(args.train_out, "tfidf.npz"), train_tfidf)
     sparse.save_npz(os.path.join(args.val_out, "tfidf.npz"), val_tfidf)
     sparse.save_npz(os.path.join(args.test_out, "tfidf.npz"), test_tfidf)
+    sparse.save_npz(os.path.join(args.deploy_out, "tfidf.npz"), deploy_tfidf)  # ADD THIS
 
     # Save feature names
     feature_names = vectorizer.get_feature_names_out()

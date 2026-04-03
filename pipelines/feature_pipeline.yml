@@ -14,6 +14,7 @@ jobs:
     inputs:
       data: ${{parent.inputs.sampled_data}}
 
+  # ── Normalize ──────────────────────────────────────────
   normalize_train:
     type: command
     component: azureml:normalize_text@latest
@@ -32,44 +33,159 @@ jobs:
     inputs:
       data: ${{parent.jobs.split.outputs.test}}
 
+  normalize_deploy:                                        # NEW
+    type: command
+    component: azureml:normalize_text@latest
+    inputs:
+      data: ${{parent.jobs.split.outputs.deploy}}
+
+  # ── Review Length ──────────────────────────────────────
   length_train:
     type: command
     component: azureml:review_length@latest
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
+  length_val:                                              # NEW
+    type: command
+    component: azureml:review_length@latest
+    inputs:
+      data: ${{parent.jobs.normalize_val.outputs.out}}
+
+  length_test:                                             # NEW
+    type: command
+    component: azureml:review_length@latest
+    inputs:
+      data: ${{parent.jobs.normalize_test.outputs.out}}
+
+  length_deploy:                                           # NEW
+    type: command
+    component: azureml:review_length@latest
+    inputs:
+      data: ${{parent.jobs.normalize_deploy.outputs.out}}
+
+  # ── Sentiment ──────────────────────────────────────────
   sentiment_train:
     type: command
     component: azureml:sentiment_features@latest
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
+  sentiment_val:                                           # NEW
+    type: command
+    component: azureml:sentiment_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_val.outputs.out}}
+
+  sentiment_test:                                          # NEW
+    type: command
+    component: azureml:sentiment_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_test.outputs.out}}
+
+  sentiment_deploy:                                        # NEW
+    type: command
+    component: azureml:sentiment_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_deploy.outputs.out}}
+
+  # ── TF-IDF ─────────────────────────────────────────────
   tfidf:
     type: command
     component: azureml:tfidf_features@latest
     inputs:
       train_data: ${{parent.jobs.normalize_train.outputs.out}}
-      val_data: ${{parent.jobs.normalize_val.outputs.out}}
-      test_data: ${{parent.jobs.normalize_test.outputs.out}}
+      val_data:   ${{parent.jobs.normalize_val.outputs.out}}
+      test_data:  ${{parent.jobs.normalize_test.outputs.out}}
+      deploy_data: ${{parent.jobs.normalize_deploy.outputs.out}}  # NEW
 
+  # ── Semantic Embeddings ────────────────────────────────
   sbert_train:
     type: command
     component: azureml:semantic_embeddings@latest
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
+  sbert_val:                                               # NEW
+    type: command
+    component: azureml:semantic_embeddings@latest
+    inputs:
+      data: ${{parent.jobs.normalize_val.outputs.out}}
+
+  sbert_test:                                              # NEW
+    type: command
+    component: azureml:semantic_embeddings@latest
+    inputs:
+      data: ${{parent.jobs.normalize_test.outputs.out}}
+
+  sbert_deploy:                                            # NEW
+    type: command
+    component: azureml:semantic_embeddings@latest
+    inputs:
+      data: ${{parent.jobs.normalize_deploy.outputs.out}}
+
+  # ── Helpfulness ────────────────────────────────────────
   helpfulness_train:
     type: command
     component: azureml:helpfulness_features@latest
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
-  merge_all:
+  helpfulness_val:                                         # NEW
+    type: command
+    component: azureml:helpfulness_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_val.outputs.out}}
+
+  helpfulness_test:                                        # NEW
+    type: command
+    component: azureml:helpfulness_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_test.outputs.out}}
+
+  helpfulness_deploy:                                      # NEW
+    type: command
+    component: azureml:helpfulness_features@latest
+    inputs:
+      data: ${{parent.jobs.normalize_deploy.outputs.out}}
+
+  # ── Merge ──────────────────────────────────────────────
+  merge_train:                                             # RENAMED from merge_all
     type: command
     component: azureml:merge_features@latest
     inputs:
       review_length_data: ${{parent.jobs.length_train.outputs.out}}
-      sentiment_data: ${{parent.jobs.sentiment_train.outputs.out}}
-      tfidf_train_data: ${{parent.jobs.tfidf.outputs.train_out}}
-      embeddings_data: ${{parent.jobs.sbert_train.outputs.out}}
-      helpfulness_data: ${{parent.jobs.helpfulness_train.outputs.out}}
+      sentiment_data:     ${{parent.jobs.sentiment_train.outputs.out}}
+      tfidf_data:         ${{parent.jobs.tfidf.outputs.train_out}}
+      embeddings_data:    ${{parent.jobs.sbert_train.outputs.out}}
+      helpfulness_data:   ${{parent.jobs.helpfulness_train.outputs.out}}
+
+  merge_val:                                               # NEW
+    type: command
+    component: azureml:merge_features@latest
+    inputs:
+      review_length_data: ${{parent.jobs.length_val.outputs.out}}
+      sentiment_data:     ${{parent.jobs.sentiment_val.outputs.out}}
+      tfidf_data:         ${{parent.jobs.tfidf.outputs.val_out}}
+      embeddings_data:    ${{parent.jobs.sbert_val.outputs.out}}
+      helpfulness_data:   ${{parent.jobs.helpfulness_val.outputs.out}}
+
+  merge_test:                                              # NEW
+    type: command
+    component: azureml:merge_features@latest
+    inputs:
+      review_length_data: ${{parent.jobs.length_test.outputs.out}}
+      sentiment_data:     ${{parent.jobs.sentiment_test.outputs.out}}
+      tfidf_data:         ${{parent.jobs.tfidf.outputs.test_out}}
+      embeddings_data:    ${{parent.jobs.sbert_test.outputs.out}}
+      helpfulness_data:   ${{parent.jobs.helpfulness_test.outputs.out}}
+
+  merge_deploy:                                            # NEW
+    type: command
+    component: azureml:merge_features@latest
+    inputs:
+      review_length_data: ${{parent.jobs.length_deploy.outputs.out}}
+      sentiment_data:     ${{parent.jobs.sentiment_deploy.outputs.out}}
+      tfidf_data:         ${{parent.jobs.tfidf.outputs.deploy_out}}
+      embeddings_data:    ${{parent.jobs.sbert_deploy.outputs.out}}
+      helpfulness_data:   ${{parent.jobs.helpfulness_deploy.outputs.out}}

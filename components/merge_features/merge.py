@@ -7,7 +7,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--review_length_data", type=str, required=True)
     parser.add_argument("--sentiment_data", type=str, required=True)
-    parser.add_argument("--tfidf_train_data", type=str, required=True)
+    parser.add_argument("--tfidf_data", type=str, required=True)
     parser.add_argument("--embeddings_data", type=str, required=True)
     parser.add_argument("--helpfulness_data", type=str, required=True)
     parser.add_argument("--out", type=str, required=True)
@@ -24,7 +24,7 @@ def main():
     # Load all feature datasets
     review_length_df = load_parquet(args.review_length_data)
     sentiment_df = load_parquet(args.sentiment_data)
-    tfidf_df = load_parquet(args.tfidf_train_data)
+    tfidf_df = load_parquet(args.tfidf_data)
     embeddings_df = load_parquet(args.embeddings_data)
     helpfulness_df = load_parquet(args.helpfulness_data)
 

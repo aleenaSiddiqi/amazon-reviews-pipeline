@@ -1,0 +1,13 @@
+name: amazon-review-training-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - pandas          # loading data.parquet
+      - pyarrow         # reading/writing parquet files
+      - numpy           # feature matrix operations
+      - scikit-learn    # LogisticRegression + all metrics
+      - joblib          # saving model.pkl
+      - azureml-mlflow  # MLflow metrics appear in Azure ML experiments
