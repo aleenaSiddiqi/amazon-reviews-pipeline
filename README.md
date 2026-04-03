@@ -1,69 +1,235 @@
-# Overview
+### Lab 5 – Scalable Feature Extraction and Selection for Predictive Maintenance
+Course: DSAI3202 – Winter 2026
+Dataset: NASA Turbofan Engine Degradation (C-MAPSS) – FD001 subset
+Goal: Build a pipeline that predicts the Remaining Useful Life (RUL) of aircraft engines
 
-- Azure Blob storage (ADLS Gen2): data lake for storing raw,
-- Azure Machine learning compute instance: VM for data download and preprocessing
-- Azure data factory (ADF): Pipeline orchestration and data transformation
-- AzCopy: Command-line tool for blob storage operations
+## Overview
+Industrial sensors generate large amounts of time-series data. Raw sensor signals need to be transformed into meaningful features before they can be used in machine learning models. This lab builds a full pipeline that:
 
-## Implementation
+1. Loads and preprocesses raw sensor data
+2. Extracts time-series features using tsfresh
+3. Reduces features using filter-based methods
+4. Further refines features using a Genetic Algorithm (DEAP)
+5. Trains a regression model to predict RUL
+6. Evaluates and times the full pipeline
 
-### Azure Storage Account Setup
-The first thing we did was set up the Azure Storage Account. I created a storage account named amazondatalake60308963 in the Qatar Central region. During configuration, I made sure to enable Hierarchical Namespaces, which is critical for ADLS Gen2. Why? Because hierarchical namespaces allow the storage to behave more like a traditional file system with directories, which makes it much more efficient for big data analytics and allows for better access control and organization.After creating the storage account, I created three containers to organize our data at different stages:
--raw: for storing source data exactly as we receive it
--processed: for transformed and cleaned data
--curated: for analytics-ready data that's been aggregated or joined
-This three-zone architecture is a best practice in data engineering because it keeps your original data safe while also allowing you to build increasingly refined versions for different use cases.
+## Environment
 
-### Data Acquisition
-- The second step was about data acquisition. I started with the product metadata file. I downloaded meta_Electronics.json.gz from the Stanford SNAP dataset website and uploaded it via the Azure Portal UI directly to the raw container. This was straightforward since the file was small enough to handle through the web interface.
-- For the larger reviews dataset, I took a different approach using command-line tools, which is more realistic for handling big data files. First, I created an Azure ML Compute Instance, which is essentially a cloud-based virtual machine. Once the VM was running, I opened a terminal and downloaded the reviews dataset (500 MB compressed) directly to the VM using wget:
-wget https://snap.stanford.edu/data/amazon/productGraph/categoryFiles/reviews_Electronics_5.json.gz
-- Then I uploaded the unzipped JSON file to blob storage using AzCopy, which is much faster than the portal for large files: 
-azcopy copy \
-  "./reviews_Electronics_5.json" \
-  "https://amazondatalake60308963.blob.core.windows.net/raw/reviews_Electronics_5.json?<SAS_TOKEN>" \
-  --overwrite=true
+Platform: Azure Databricks
+Storage: Azure Data Lake Storage Gen2 (ADLS)
+Language: Python (PySpark + Pandas)
+Containers used:
 
-### Fixing the Metadata File
-- The metadata file had a problem: even though it had a .json extension, it wasn't actually valid JSON. Each line was formatted as a Python dictionary with single quotes instead of the double quotes that JSON requires.
-- To fix this, I downloaded the metadata file from blob storage, decompressed it, and ran a Python script to convert each line from Python dictionary format to proper JSON format. The script reads each line, parses it as a Python literal, and writes it back out as valid JSON. The fixd file was uploaded back to blob storage
+    -> raw/cmapss/ – original .txt files
+    -> processed/cmapss/ – cleaned and normalized data
+    -> curated/cmapss/ – final selected features
 
-python3 << 'EOF'
-import ast
-import json
+## Dataset
+The NASA C-MAPSS FD001 dataset contains sensor readings from 100 aircraft engines, each run until failure. It has:
 
-input_file = "meta_Electronics.json"
-output_file = "meta_Electronics_fixed.json"
+- 20,631 training rows
+- 13,096 test rows
+- 21 sensors + 3 operating conditions per row
+- One row per engine per cycle
 
-with open(input_file, "r") as fin, open(output_file, "w") as fout:
-    for line in fin:
-        obj = ast.literal_eval(line)
-        fout.write(json.dumps(obj) + "\n")
-        
-print("Metadata conversion complete.")
-EOF
-
-### Azure Data Factory pipeline
-- The next step involved creating an Azure Data Factory pipeline to automate the data transformation process. I created an ADF instance named `amazon-adf-60308963` in the same region as my storage account to minimize latency and data transfer costs.
-- Then we set up a linked service. A Linked Service in ADF is basically a saved connection to your data source. I created a linked service that connects ADF to my ADLS Gen2 storage account using account key authentication. This allows the pipeline to read from and write to my storage containers.
-- I set up two datasets that define where data comes from and where it goes:
-  Source Dataset: ds_reviews_raw_json
-  Sink Dataset: ds_reviews_processed_parquet
-[Schema drift when enabled, allows the pipeline to handle variations in the data structure]
-- The acutal transformation happend when building the Mapping data flow. I created a data flow called `df_reviews_json_to_parquet_partitioned` where the raw JSON data is read and schema drift enabled so that the pipeline can handle any unexpected fields. Then we create a new column called "review_year" by extracting the year from the Unix timestamp in the data. The expression used was: year(toTimestamp(toLong(unixReviewTime) * 1000)). This converts the Unix timestamp (seconds since 1970) to a proper timestamp, then extracts just the year.
-- Sink: write the data to Parquet format and partition it by the review_year column. So the output data is organized into separate folders by year (1999,2000,2001,etc) which makes queries that filter by year much faster.
-- I created a pipeline named pl_reviews_ingestion_parquet_partitioned and added the data flow as an activity. Then I ran it in debug mode to test it. The pipeline successfully processed all 6.7 million reviews and wrote them to the processed container, partitioned across 16 years.
-- Finally, I added a schedule trigger that runs the pipeline automatically on a daily basis. In a real-world scenario, this would process any new data that arrives in the raw container. I published the pipeline to make it live.
-
-<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 13 56 AM" src="https://github.com/user-attachments/assets/3f4369ec-4c46-427f-bbd8-2973f0f2d5d5" />
-<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 19 24 AM" src="https://github.com/user-attachments/assets/5bde4370-fec4-46cb-a24f-71000f33f1c8" />
-<img width="1440" height="900" alt="Screenshot 2026-01-25 at 10 14 39 AM" src="https://github.com/user-attachments/assets/5750c326-ebac-4454-922b-9a905b2aa6ed" />
+Downloaded from: https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/ (item 6)
 
 
+## How to Run
+1. Setup
+Upload the following files to your ADLS raw/cmapss/ container:
+```
+train_FD001.txt
+test_FD001.txt
+RUL_FD001.txt
+```
+
+In your Databricks notebook, configure ADLS access:
+```
+pythonstorage_account_name = "your_storage_account_name"
+access_key = "your_access_key"
+
+spark.conf.set(
+    f"fs.azure.account.key.{storage_account_name}.dfs.core.windows.net",
+    access_key
+)
+
+raw_path       = f"abfss://raw@{storage_account_name}.dfs.core.windows.net/cmapss"
+processed_path = f"abfss://processed@{storage_account_name}.dfs.core.windows.net/cmapss"
+curated_path   = f"abfss://curated@{storage_account_name}.dfs.core.windows.net/cmapss"
+```
+
+2. Install dependencies
+```
+python%pip install tsfresh deap xgboost
+```
+Restart the kernel after installing.
+
+3. Run the notebook
+Run lab5_pipeline.ipynb cell by cell from top to bottom.
+
+## Pipeline Steps
+
+# Step 1 – Load Data (PySpark)
+
+Data is loaded using PySpark since files are space-separated with no headers. Each row is parsed into 26 named columns: unit, cycle, 3 operating settings, and 21 sensors.
+```
+col_names = ['unit', 'cycle'] + [f'op_{i}' for i in range(1,4)] + [f'sensor_{i}' for i in range(1,22)]
+```
+
+# Step 2 – Compute RUL
+
+RUL is computed per engine as:
+```
+RUL = max_cycle_for_that_engine - current_cycle
+```
+This gives each row a label representing how many cycles remain until failure.
+
+# Step 3 – Drop Constant Sensors
+
+Sensors with near-zero standard deviation carry no useful information. We drop them:
+```
+Dropped: sensor_1, sensor_5, sensor_6, sensor_10, sensor_16, sensor_18, sensor_19
+Kept: 14 out of 21 sensors
+```
+
+# Step 4 – Normalize
+
+MinMaxScaler is applied to scale all sensor values to [0, 1]. The scaler is fit on training data only and applied to test data to prevent data leakage.
+
+# Step 5 – Save to Processed Container
+
+Preprocessed data is saved as Parquet to the processed/cmapss/ container.
+
+## Feature Extraction (tsfresh)
+
+tsfresh requires Pandas, so the Spark DataFrame is converted. tsfresh treats each engine (unit) as one time series and extracts statistical features per sensor across all its cycles.
+
+```
+extracted = extract_features(
+    ts_input,
+    column_id='unit',
+    column_sort='cycle',
+    n_jobs=4
+)
+```
+
+Result: 10,962 features extracted across 100 engines
+Runtime: 111 seconds
+
+-> Note on n_jobs: I originally tried n_jobs=-1 (use all cores) but Databricks does not support this — it throws ValueError: Number of processes must be at least 1. Setting n_jobs=4 fixed the error.
+
+## Feature Selection
+
+tsfresh generates thousands of features. Most are noise. We use 3 filter passes to reduce them efficiently before the Genetic Algorithm.
+
+# Pass 1 – Variance Threshold
+Removes features with near-zero variance; they don't change between engines so they can't help predict RUL.
+
+```
+10,962 → 6,701 features
+```
+
+# Pass 2 – Pearson Correlation with RUL
+Computes how linearly correlated each feature is with RUL. We keep the top 150 most correlated features. This is extremely fast even on thousands of features.
+```
+6,701 → 150 features
+```
+
+# Pass 3 – Mutual Information
+Mutual information captures non-linear relationships between features and RUL. We keep the top 50 features.
+```
+150 → 50 features
+```
+
+-> I originally ran Mutual Information before the correlation filter on the full 6,701 features. This caused the cell to run for over 27 minutes without finishing. I killed it and switched the order.
+The new order runs Pearson first (near-instant on large sets), bringing features down to 150 before MI runs. The tradeoff is that MI scores are computed on a pre-filtered set, meaning some features that are non-linearly related to RUL but not linearly related might be discarded. I searched about it and in practice this seemed acceptable because the Genetic Algorithm in the next step compensates for any suboptimal choices here.
+
+## Genetic Algorithm (DEAP)
+A Genetic Algorithm evolves subsets of the 50 filtered features to find the combination that gives the best RUL prediction.
+
+# Design
+
+# Parameter:	Value
+Chromosome:	Binary vector of length 50 
+Population Size: 	20 individuals
+Generations:	10
+Crossover Probability:	0.7
+Mutation Probability:	0.2
+Selection:	Tournament (size 3)
+
+# Fitness Function
+
+```
+fitness = RMSE + 0.1 * number_of_selected_features
+```
+This penalizes using too many features hence encouraging the GA to find a small but accurate subset.
+
+# Result
+```
+GA done in 21.64s
+Selected 10 features from 50
+```
+
+## Model Training and Evaluation
+An XGBoost regressor is trained on the 10 GA-selected features.
+```
+model = XGBRegressor(n_estimators=100, random_state=42)
+```
+
+# Results:
+RMSE: 4.802
+MAE:  1.937
+R2:   0.992
+Features used: 10
+
+An R² of 0.992 means the model explains 99.2% of variance in RUL which is a strong predictive performance with only 10 features.
 
 
+========================================
+## PIPELINE SUMMARY
+========================================
+Features after tsfresh:       10962
+Features after variance:       6701
+Features after Pearson:         150
+Features after MI:               50
+Features after GA:               10
+========================================
+tsfresh extraction time:  111.16s
+GA time:                   21.64s
+========================================
+RMSE:  4.802
+MAE:   1.937
+R2:    0.992
+========================================
 
+## Optimizations
+- Used n_jobs=4 in tsfresh for parallel extraction
+- Ran Pearson correlation before Mutual Information (saved ~25 minutes)
+- Kept only 50 features before GA instead of passing all filtered features
+- Used a small GA population (20) and limited generations (10) to balance speed and quality
 
+## Dependencies
+```
+pyspark
+tsfresh
+deap
+xgboost
+scikit-learn
+pandas
+numpy
+```
+
+Install with:
+```
+%pip install tsfresh deap xgboost
+```
+
+## References
+
+- NASA C-MAPSS Dataset: https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
+- tsfresh documentation: https://tsfresh.readthedocs.io
+- DEAP documentation: https://deap.readthedocs.io
 
 
 
