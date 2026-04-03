@@ -20,6 +20,9 @@ def parse_args():
     parser.add_argument("--val_data",   type=str, required=True)
     parser.add_argument("--test_data",  type=str, required=True)
     parser.add_argument("--output",     type=str, required=True)
+    # Hyperparameters for sweep
+    parser.add_argument("--C",        type=float, default=1.0)
+    parser.add_argument("--max_iter", type=int,   default=1000)
     return parser.parse_args()
 
 # --------------------------------------------------
@@ -126,11 +129,17 @@ def main():
         if len(X_train) == 0:
             raise RuntimeError("Training data is empty. That's concerning.")
 
+        # Log hyperparameters
+        mlflow.log_param("C",        args.C)
+        mlflow.log_param("max_iter", args.max_iter)
+
+        # Model definition using hyperparameters
         print("Training model...")
         model = LogisticRegression(
-            max_iter=1000,
+            C=args.C,
+            max_iter=args.max_iter,
             random_state=42,
-            n_jobs=-1        # use all CPU cores → faster training
+            n_jobs=-1
         )
         model.fit(X_train, y_train)
 
