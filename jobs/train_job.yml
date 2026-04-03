@@ -15,8 +15,8 @@ command: >-
   --val_data ${{inputs.val_data}}
   --test_data ${{inputs.test_data}}
   --output ${{outputs.model_output}}
-  --C ${{inputs.C}}
-  --max_iter ${{inputs.max_iter}}
+  --C 3.1353264492857433
+  --max_iter 1000
 
 inputs:
   train_data:
