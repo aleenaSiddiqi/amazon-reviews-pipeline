@@ -20,6 +20,8 @@ def parse_args():
     parser.add_argument("--val_data",   type=str, required=True)
     parser.add_argument("--test_data",  type=str, required=True)
     parser.add_argument("--output",     type=str, required=True)
+    parser.add_argument("--features", type=str, default="all",
+                    choices=["sbert_only", "sbert_tfidf", "all"])
     # Hyperparameters for sweep
     parser.add_argument("--C",        type=float, default=3.1353264492857433)
     parser.add_argument("--max_iter", type=int,   default=1000)
@@ -48,32 +50,33 @@ def create_labels(df):
 # --------------------------------------------------
 # Features
 # --------------------------------------------------
-def build_features(df):
-    # Get all bert embedding columns
-    bert_cols = [c for c in df.columns if c.startswith("bert_embedding_")]
-
-    # Numeric feature columns (exclude non-features and bert cols)
-    exclude_cols = [
-        "overall", "label", "reviewText", "summary",
-        "reviewerID", "asin", "reviewerName", "title", "brand",
-        "reviewTime", "unixReviewTime", "helpful",
-    ] + bert_cols  # exclude bert cols from numeric — handled separately
-
+def build_features(df, feature_config="all"):
+    bert_cols    = [c for c in df.columns if c.startswith("bert_embedding_")]
+    tfidf_cols   = [c for c in df.columns if c.startswith("tfidf_")]
     numeric_cols = [
         c for c in df.columns
-        if c not in exclude_cols and pd.api.types.is_numeric_dtype(df[c])
+        if c not in bert_cols + tfidf_cols
+        and c not in ["overall", "label", "reviewText", "summary",
+                      "reviewerID", "asin", "reviewerName", "title",
+                      "brand", "reviewTime", "unixReviewTime", "helpful"]
+        and pd.api.types.is_numeric_dtype(df[c])
     ]
 
-    X_numeric = df[numeric_cols].fillna(0).values      # sentiment, length, helpfulness
-    X_sbert   = df[bert_cols].fillna(0).values         # bert_embedding_0 ... 383
+    X_sbert   = df[bert_cols].fillna(0).values
+    X_tfidf   = df[tfidf_cols].fillna(0).values
+    X_numeric = df[numeric_cols].fillna(0).values
 
-    X = np.hstack([X_numeric, X_sbert])
+    if feature_config == "sbert_only":
+        X = X_sbert
+    elif feature_config == "sbert_tfidf":
+        X = np.hstack([X_sbert, X_tfidf])
+    else:  # all
+        X = np.hstack([X_numeric, X_sbert, X_tfidf])
+
+    print(f"Feature config: {feature_config} → {X.shape[1]} total features")
 
     if len(X) == 0:
         raise RuntimeError("Feature matrix is empty. Impressive.")
-
-    print(f"Features: {X_numeric.shape[1]} numeric + {X_sbert.shape[1]} bert = {X.shape[1]} total")
-
     return X
 
 # --------------------------------------------------
@@ -118,9 +121,9 @@ def main():
         test_df  = create_labels(test_df)
 
         print("Building features...")
-        X_train = build_features(train_df)
-        X_val   = build_features(val_df)
-        X_test  = build_features(test_df)
+        X_train = build_features(train_df, args.features)
+        X_val   = build_features(val_df,   args.features)
+        X_test  = build_features(test_df,  args.features)
 
         y_train = train_df["label"]
         y_val   = val_df["label"]
@@ -132,6 +135,7 @@ def main():
         # Log hyperparameters
         mlflow.log_param("C",        args.C)
         mlflow.log_param("max_iter", args.max_iter)
+        mlflow.log_param("feature_config", args.features)
 
         # Model definition using hyperparameters
         print("Training model...")
