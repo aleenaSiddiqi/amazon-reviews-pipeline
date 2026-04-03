@@ -41,28 +41,19 @@ def build_features(df):
 
 def run(raw_data):
     try:
-        # Parse incoming JSON
         data = json.loads(raw_data)
 
-        # Accept either a list of records or a single record
-        if isinstance(data, dict):
-            df = pd.DataFrame([data])
-        elif isinstance(data, list):
-            df = pd.DataFrame(data)
-        else:
-            return {"error": "Invalid input format. Expected a JSON object or list."}
+        # data is a list of lists (feature rows) not dicts
+        # convert directly to numpy array
+        X = np.array(data)
 
-        # Build features using same logic as training
-        X = build_features(df)
-
-        # Predict
         preds = model.predict(X)
         proba = model.predict_proba(X)[:, 1]
 
-        return {
+        return json.dumps({
             "predictions": preds.tolist(),
             "probabilities": proba.tolist()
-        }
+        })
 
     except Exception as e:
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})

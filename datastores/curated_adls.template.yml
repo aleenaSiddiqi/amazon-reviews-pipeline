@@ -1,7 +1,0 @@
-$schema: https://azuremlschemas.azureedge.net/latest/datastore.schema.json
-name: blobkey
-type: azure_blob
-account_name: <STORAGE_ACCOUNT_NAME>
-container_name: curated
-credentials:
-  account_key: <STORAGE_ACCOUNT_KEY>
