@@ -53,7 +53,7 @@ The feature engineering pipeline was built in Azure ML and produces merged featu
 | `tfidf_features` | `tfidf.py` | Fits TF-IDF on train, transforms all splits |
 | `merge_features` | `merge.py` | Merges all feature outputs into one parquet per split |
 
-image.png
+![4split_pipeline](image-9.png)
 
 ---
 
@@ -70,7 +70,7 @@ The following Azure ML Data Assets are registered and reference the merged featu
 | `amazon_reviews_merged_features_test` | Test (15%) |
 | `amazon_reviews_merged_features_deploy` | Deployment (10%) |
 
-image.png
+![datassets](image-8.png)
 
 ---
 
@@ -137,7 +137,7 @@ A sweep job was run using **random sampling** over the following search space:
 | `C` | `3.1353264492857433` |
 | `max_iter` | `1000` |
 
-image.png
+![best_params](image-7.png)
 
 ---
 
@@ -157,7 +157,7 @@ The following metrics are logged for each split (train, val, test):
 | `max_iter` | Max iterations used |
 | `feature_config` | Feature configuration used |
 
-image.png
+![metrics](image-6.png)
 
 
 
@@ -167,7 +167,7 @@ image.png
 
 Trained using optimal hyperparameters (`C=3.135`, `max_iter=1000`) on all features.
 
-image.png
+![final_model_performance](image-5.png)
 
 ---
 
@@ -179,7 +179,7 @@ The trained model artifact (`model.pkl`) is registered in the Azure ML Model Reg
 - **Version:** 1
 - **Type:** Custom model
 
-image.png
+![resgistered_model](image-4.png)
 
 ---
 
@@ -203,7 +203,7 @@ trigger:
 
 **Service Connection:** `SC-UDST-CCIT-DSAI3202-1`
 
-image.png
+![devOps_pipeline_automation](image-2.png)
 
 ---
 
@@ -223,7 +223,7 @@ The model is deployed to an Azure ML Managed Online Endpoint:
 
 Defined in `env/inference_conda.yml`. Dependencies: `numpy`, `pandas`, `scikit-learn`, `joblib`, `azureml-defaults`.
 
-image.png
+![deployed_endpoint](image-3.png)
 
 ---
 
@@ -240,7 +240,7 @@ The deployment dataset (`amazon_reviews_merged_features_deploy`) was used to inv
 | Recall | 0.8291 |
 | AUC | 0.8245 |
 
-image.png
+![deployment_results](image.png)
 
 ---
 
