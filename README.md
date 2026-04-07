@@ -244,6 +244,11 @@ The deployment dataset (`amazon_reviews_merged_features_deploy`) was used to inv
 
 ---
 
+## Bonus question attempt
+Data leakage or test set leakage
+-> The assignment incorrectly uses the test dataset during the model development process. The test set is evaluated in every training run and across multiple experiments, which leads to test set leakage. In proper machine learning practice, the test set should only be used once for final evaluation after all model tuning and selection is complete. Repeated exposure to test performance allows indirect optimization toward the test data, resulting in overly optimistic performance estimates and reduced generalization.
+
+
 ## Azure ML Resources
 
 | Resource | Name |
